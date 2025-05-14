@@ -1,0 +1,30 @@
+import random
+import math
+
+def objective_function(x):
+    return x ** 2
+
+def simulated_annealing():
+    T, alpha, bounds = 1000.0, 0.95, [-5, 5]
+    current_x = best_x = random.uniform(*bounds)
+    current_energy = best_energy = objective_function(current_x)
+   
+    while T > 1e-10:
+        for _ in range(100):
+            neighbor_x = max(bounds[0], min(current_x + random.uniform(-0.5, 0.5), bounds[1]))
+            neighbor_energy = objective_function(neighbor_x)
+            delta_E = neighbor_energy - current_energy
+
+            if delta_E < 0 or random.random() < math.exp(-delta_E / T):
+                current_x, current_energy = neighbor_x, neighbor_energy
+                if current_energy < best_energy:
+                    best_x, best_energy = current_x, current_energy
+       
+        T *= alpha
+   
+    return best_x, best_energy
+
+# Run the algorithm
+optimized_x, optimized_energy = simulated_annealing()
+print(f"Optimized x: {optimized_x}")
+print(f"Minimum value found: {optimized_energy}")
