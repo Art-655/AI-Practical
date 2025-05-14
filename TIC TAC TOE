@@ -1,0 +1,56 @@
+import random
+
+# Display the current state of the board
+def display_board(board):
+    print(f"{board[7]}|{board[8]}|{board[9]}\n-|-|-\n{board[4]}|{board[5]}|{board[6]}\n-|-|-\n{board[1]}|{board[2]}|{board[3]}\n")
+
+# Choose markers for players
+def player_input():
+    marker = ''
+    while marker not in ['x', 'o']:
+        marker = input("Player 1, choose 'x' or 'o': ").lower()
+    return (marker, 'o' if marker == 'x' else 'x')
+
+# Decide who plays first
+def first_move():
+    return "player 1" if random.randint(0, 1) == 0 else "player 2"
+
+# Check for a winning condition
+def check_win(b, m):
+    return any([all(b[i] == m for i in line) for line in [(7,8,9), (4,5,6), (1,2,3), (7,4,1), (8,5,2), (9,6,3), (7,5,3), (9,5,1)]])
+
+# Choose the next position for a move
+def next_position(board, player):
+    if player == "player 1":
+        return int(input('Choose your next position (1-9): '))
+    else:
+        free = [i for i, x in enumerate(board) if x == " " and i != 0]
+        return random.choice(free)
+
+# Main Game Loop
+while True:
+    board = [' '] * 10
+    p1_marker, p2_marker = player_input()
+    turn, game_on = first_move(), True
+    print(f"{turn} goes first.")
+
+    while game_on:
+        display_board(board)
+ 
+
+        marker = p1_marker if turn == "player 1" else p2_marker
+        pos = next_position(board, turn)
+        if board[pos] == " ":
+            board[pos] = marker
+            if check_win(board, marker):
+                display_board(board)
+                print(f"{turn} wins!")
+                game_on = False
+            elif " " not in board[1:]:
+                display_board(board)
+                print("It's a draw!")
+                game_on = False
+            turn = "player 2" if turn == "player 1" else "player 1"
+
+    if input('Play again? (yes/no): ').lower() != 'yes':
+        break
