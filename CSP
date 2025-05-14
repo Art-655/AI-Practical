@@ -1,0 +1,39 @@
+def is_safe(matrix, row, col, num, n):
+    # Check if 'num' is not in the current row and column
+    for i in range(n):
+        if matrix[row][i] == num or matrix[i][col] == num:
+            return False
+    return True
+
+def solve_csp(matrix, n, row=0, col=0):
+    # If we have filled all rows, solution is found
+    if row == n:
+        return True
+   
+    # Move to the next row if we are at the end of the current row
+    if col == n:
+        return solve_csp(matrix, n, row + 1, 0)
+
+    # Try placing each number from 1 to n
+    for num in range(1, n + 1):
+        if is_safe(matrix, row, col, num, n):
+            matrix[row][col] = num
+            if solve_csp(matrix, n, row, col + 1):
+                return True
+            # Backtrack if not possible
+            matrix[row][col] = 0
+
+    return False
+
+def generate_csp_matrix(n):
+    matrix = [[0 for _ in range(n)] for _ in range(n)]
+   
+    if solve_csp(matrix, n):
+        for row in matrix:
+            print(" ".join(map(str, row)))
+    else:
+        print("No solution found.")
+
+# Example Usage
+n = 3
+generate_csp_matrix(n)
