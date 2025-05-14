@@ -1,0 +1,61 @@
+ 
+
+def is_variable(x):
+    """ Check if the term is a variable (lowercase letter) """
+    return isinstance(x, str) and x.islower()
+
+def unify(x, y, substitutions={}):
+    """
+    Unify two expressions x and y with an initial set of substitutions.
+    """
+    # If the substitutions are already incompatible, fail
+    if substitutions is None:
+        return None
+   
+    # If both terms are identical, no new substitution needed
+    if x == y:
+        return substitutions
+   
+    # If x is a variable, bind it to y
+    if is_variable(x):
+        return unify_var(x, y, substitutions)
+   
+    # If y is a variable, bind it to x
+    if is_variable(y):
+        return unify_var(y, x, substitutions)
+   
+    # If both are compound expressions, unify their components
+    if isinstance(x, list) and isinstance(y, list) and len(x) == len(y):
+        for i in range(len(x)):
+            substitutions = unify(x[i], y[i], substitutions)
+            if substitutions is None:
+                return None
+        return substitutions
+   
+    # If none of the above, unification fails
+    return None
+
+def unify_var(var, x, substitutions):
+    """
+    Apply the variable binding rules.
+    """
+    if var in substitutions:
+        return unify(substitutions[var], x, substitutions)
+    elif x in substitutions:
+        return unify(var, substitutions[x], substitutions)
+    else:
+        # Perform the substitution
+        new_subs = substitutions.copy()
+        new_subs[var] = x
+        return new_subs
+
+# Example usage
+expr1 = ['P', 'x', 'y']
+expr2 = ['P', 'A', 'B']
+
+substitutions = unify(expr1, expr2, {})
+if substitutions is not None:
+    print("Unification successful!")
+    print("Substitutions:", substitutions)
+else:
+    print("Unification failed.")
